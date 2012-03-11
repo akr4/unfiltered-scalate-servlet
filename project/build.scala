@@ -11,7 +11,7 @@ object MyBuild extends Build {
     (shellPrompt := { s => Project.extract(s).currentProject.id + "> " })
 
   val defaultSettings = Defaults.defaultSettings ++ Seq(
-    version := "0.1",
+    version := "1.0",
     organization := "net.physalis",
     crossScalaVersions := Seq("2.9.0", "2.9.0-1", "2.9.1"),
     scalaVersion := "2.9.1",
@@ -20,25 +20,14 @@ object MyBuild extends Build {
 
   object Dependency {
 
-    val basic = {
-      Seq(
-        "org.scala-tools.time" %% "time" % "0.5"
-      )
-    }
-
-    val io = {
-      val version = "0.3.0"
-      Seq(
-        "com.github.scala-incubator.io" %% "scala-io-core" % version,
-        "com.github.scala-incubator.io" %% "scala-io-file" % version
-      )
-    }
-
     val logging = Seq(
-      "ch.qos.logback" % "logback-classic" % "0.9.25",
-      "org.codehaus.groovy" % "groovy" % "1.8.0",
       "org.slf4j" % "slf4j-api" % "1.6.2",
       "org.clapper" %% "grizzled-slf4j" % "0.6.6"
+    )
+
+    val loggingImpl = Seq(
+      "ch.qos.logback" % "logback-classic" % "0.9.25",
+      "org.codehaus.groovy" % "groovy" % "1.8.0"
     )
 
     val test = Seq(
@@ -51,7 +40,7 @@ object MyBuild extends Build {
       Seq(
         "net.databinder" %% "unfiltered-filter" % version,
         "net.databinder" %% "unfiltered-jetty" % version,
-	"org.fusesource.scalate" % "scalate-core" % "1.5.3"
+        "org.fusesource.scalate" % "scalate-core" % "1.5.3"
       )
     }
 
@@ -59,28 +48,33 @@ object MyBuild extends Build {
       "org.mortbay.jetty" % "jetty" % "6.1.22" % "container"
     )
 
-    val default = basic ++ io ++ logging ++ test ++ unfiltered
+    val default = logging ++ test ++ unfiltered
   }
 
   lazy val parent = Project(id("parent"), file(".")) aggregate(library, sampleWebApp)
 
-  lazy val library = Project(id("library"), file("library"),
-    settings = defaultSettings ++ Seq(
-      libraryDependencies := Dependency.default,
-      initialCommands := """
-          |import scalax.io._
-          |import scalax.file._
-          |import org.scala_tools.time.Imports._
-          |import unfiltered.request._
-          |import unfiltered.response._
-        """.stripMargin
-    )
-  )
+  lazy val library = {
+    Project(id("library"), file("library"),
+      settings = defaultSettings ++ Seq(
+        libraryDependencies := Dependency.default,
+        initialCommands := """
+            |import scalax.io._
+            |import scalax.file._
+            |import org.scala_tools.time.Imports._
+            |import unfiltered.request._
+            |import unfiltered.response._
+          """.stripMargin
+        )
+      )
+  }
 
-  lazy val sampleWebApp = Project(id("web"), file("web"),
-    settings = defaultSettings ++ Seq(
-      libraryDependencies := Dependency.default ++ Dependency.jetty
-    ) ++ com.github.siasia.WebPlugin.webSettings
-  ) dependsOn(library)
+  lazy val sampleWebApp = {
+    import Dependency._
+    Project(id("web"), file("web"),
+      settings = defaultSettings ++ Seq(
+        libraryDependencies := default ++ loggingImpl ++ jetty
+      ) ++ com.github.siasia.WebPlugin.webSettings
+    ) dependsOn(library)
+  }
 
 }

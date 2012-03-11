@@ -39,7 +39,7 @@ trait DefaultScalateSupport extends Filter {
     super.init(config)
     servletContext = config.getServletContext
     engine = new ServletTemplateEngine(config)
-    configureScalate(engine)
+    configureScalateTemplateEngine(engine)
   }
 
   def configureScalateTemplateEngine(engine: ServletTemplateEngine) {
