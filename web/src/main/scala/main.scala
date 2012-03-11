@@ -1,10 +1,8 @@
 package hello
 
-import net.physalis.unfiltered.scalate.servlet.Scalate
-import javax.servlet.{ FilterConfig, ServletContext }
+import net.physalis.unfiltered.scalate.servlet.{ Scalate, DefaultScalateSupport }
 import unfiltered.filter.Plan
-import org.fusesource.scalate.TemplateEngine
-import org.fusesource.scalate.servlet.{ ServletTemplateEngine, ServletRenderContext }
+import org.fusesource.scalate.servlet.ServletTemplateEngine
 
 object MyFunction {
   import org.fusesource.scalate.servlet.ServletRenderContext._
@@ -18,16 +16,14 @@ object MyFunction {
   private def contextPath = request.getContextPath
 }
 
-class Hello extends Plan {
-  implicit var engine: TemplateEngine = _
-  implicit var servletContext: ServletContext = _
-
-  override def init(config: FilterConfig) {
-    engine = new ServletTemplateEngine(config)
+trait ScalateSupport extends DefaultScalateSupport {
+  override def configureScalateTemplateEngine(engine: ServletTemplateEngine) {
+    engine.layoutStrategy = org.fusesource.scalate.layout.NullLayoutStrategy
     engine.mode = "dev" // or production
-    servletContext = config.getServletContext
   }
+}
 
+class Hello extends Plan with ScalateSupport {
   def intent = {
     case req => Scalate(req, "WEB-INF/scalate/templates/hello.jade")
   }
