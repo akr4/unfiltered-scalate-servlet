@@ -35,14 +35,11 @@ object MyBuild extends Build {
       "org.scalamock" %% "scalamock-scalatest-support" % "latest.integration"
     ).map { _ % "test" }
 
-    val unfiltered = {
-      val version = "0.6.1"
-      Seq(
-        "net.databinder" %% "unfiltered-filter" % version,
-        "net.databinder" %% "unfiltered-jetty" % version,
-        "org.fusesource.scalate" % "scalate-core" % "1.5.3"
-      )
-    }
+    val unfiltered = Seq(
+      "net.databinder" %% "unfiltered-filter" % "0.6.1",
+      "org.fusesource.scalate" % "scalate-core" % "1.5.3",
+      "javax.servlet" % "servlet-api" % "2.3" % "provided"
+    )
 
     val jetty = Seq(
       "org.mortbay.jetty" % "jetty" % "6.1.22" % "container"
