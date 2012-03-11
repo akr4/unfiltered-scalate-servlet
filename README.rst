@@ -38,6 +38,8 @@ Customize TemplateEngine::
 
 Sample Application
 -------------------------
+::
+
   $ sbt
   sbt> project unfiltered-scalate-servlet-web
   sbt> container:start
