@@ -20,13 +20,13 @@ sbt
       "akr4 release" at "http://akr4.github.com/mvn-repo/releases"
     )
 
-    "net.physalis" %% "unfiltered-scalate-servlet" % "1.0"
+    "net.physalis" %% "unfiltered-scalate-servlet" % "2.0"
 
 Plan
 ~~~~~~~~~~~~~~~~~~~~~
 With default setting::
 
-  import net.physalis.unfiltered.scalate.servlet.{ Scalate, DefaultScalateSupport }
+  import net.physalis.unfiltered.scalate.servlet.DefaultScalateSupport
   class Hello extends Plan with DefaultScalateSupport {
     def intent = {
       case req => Scalate(req, "WEB-INF/scalate/templates/hello.jade")
