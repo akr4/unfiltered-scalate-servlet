@@ -8,26 +8,33 @@ import org.fusesource.scalate.servlet.{ ServletRenderContext, ServletTemplateEng
 import javax.servlet.{ Filter, FilterConfig, ServletContext }
 import javax.servlet.http.{ HttpServletRequest, HttpServletResponse }
 
-case class Scalate(
-  request: HttpRequest[HttpServletRequest],
-  template: String,
-  attributes: (String, Any)*
-  )
-  (
-    implicit engine: ServletTemplateEngine,
+object Scalate {
+
+  def apply(request: HttpRequest[HttpServletRequest],
+            template: String,
+            attributes: (String, Any)*)
+  ( implicit
+    engine: ServletTemplateEngine,
     servletContext: ServletContext,
-    bindings: List[Binding] = List[Binding]()
-  ) extends Responder[HttpServletResponse] {
-  
-  def respond(res: HttpResponse[HttpServletResponse]) {
-    val writer = res.underlying.getWriter()
-    try {
-      val context = new ServletRenderContext(engine, request.underlying, res.underlying, servletContext)
-      for ((k, v) <- attributes) context.attributes(k) = v
-      engine.layout(template, context)
+    bindings: List[Binding] = Nil,
+    additionalAttributes: Seq[(String, Any)] = Nil
+  ) = new Responder[HttpServletResponse] {
+    def respond(res: HttpResponse[HttpServletResponse]) {
+      val printWriter = res.underlying.getWriter()
+      try {
+        val scalateTemplate = engine.load(template, bindings)
+        val context = new ServletRenderContext(engine, printWriter, request.underlying, res.underlying, servletContext)
+        (additionalAttributes ++ attributes) foreach {
+          case (k,v) => context.attributes(k) = v
+        }
+        engine.layout(scalateTemplate, context)
+      } catch {
+        case e if engine.isDevelopmentMode =>
+          printWriter.println("Exception: " + e.getMessage)
+          e.getStackTrace.foreach(printWriter.println)
+        case e => throw e
+      }
     }
-    catch { case e => e.printStackTrace; throw e }
-    finally { writer.close() }
   }
 }
 
