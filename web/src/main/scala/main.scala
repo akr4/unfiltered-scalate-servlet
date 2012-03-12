@@ -1,7 +1,8 @@
 package hello
 
-import net.physalis.unfiltered.scalate.servlet.{ Scalate, DefaultScalateSupport }
+import net.physalis.unfiltered.scalate.servlet.DefaultScalateSupport
 import unfiltered.filter.Plan
+import unfiltered.scalate.Scalate
 import org.fusesource.scalate.servlet.ServletTemplateEngine
 
 object MyFunction {

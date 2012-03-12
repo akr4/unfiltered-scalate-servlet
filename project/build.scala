@@ -20,6 +20,9 @@ object MyBuild extends Build {
     publishMavenStyle := true
   )
 
+  // unfiltered-scalate is not compatible with latest unfiltered.
+  val unfilteredVersion = "0.5.3"
+
   object Dependency {
 
     val logging = Seq(
@@ -38,7 +41,7 @@ object MyBuild extends Build {
     ).map { _ % "test" }
 
     val unfiltered = Seq(
-      "net.databinder" %% "unfiltered-filter" % "0.6.1",
+      "net.databinder" %% "unfiltered-filter" % unfilteredVersion,
       "org.fusesource.scalate" % "scalate-core" % "1.5.3",
       "javax.servlet" % "servlet-api" % "2.3" % "provided"
     )
@@ -50,7 +53,10 @@ object MyBuild extends Build {
     val default = logging ++ test ++ unfiltered
   }
 
-  lazy val library = {
+  lazy val unfilteredScalate =
+    uri("git://github.com/unfiltered/unfiltered-scalate#0.5.3")
+
+  lazy val library =
     Project("unfiltered-scalate-servlet", file("library"),
       settings = defaultSettings ++ Seq(
         libraryDependencies := Dependency.default,
@@ -62,8 +68,7 @@ object MyBuild extends Build {
             |import unfiltered.response._
           """.stripMargin
         )
-      )
-  }
+      ) dependsOn(unfilteredScalate)
 
   lazy val sampleWebApp = {
     import Dependency._
