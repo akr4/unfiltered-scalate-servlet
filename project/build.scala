@@ -3,10 +3,6 @@ import sbt.Keys._
 
 object MyBuild extends Build {
 
-  val groupName = "unfiltered-scalate-servlet"
-
-  def id(name: String) = "%s-%s" format(groupName, name)
-
   override val settings = super.settings :+ 
     (shellPrompt := { s => Project.extract(s).currentProject.id + "> " })
 
@@ -15,7 +11,13 @@ object MyBuild extends Build {
     organization := "net.physalis",
     crossScalaVersions := Seq("2.9.0", "2.9.0-1", "2.9.1"),
     scalaVersion := "2.9.1",
-    scalacOptions ++= Seq("-unchecked", "-deprecation")
+    scalacOptions ++= Seq("-unchecked", "-deprecation"),
+    publishTo <<= (version) { version: String =>
+      val local = Path.userHome / "projects" / "akr4.github.com" / "mvn-repo"
+      val path = local / (if (version.trim.endsWith("SNAPSHOT")) "snapshots" else "releases")
+      Some(Resolver.file("Github Pages", path)(Patterns(true, Resolver.mavenStyleBasePattern)))
+    },
+    publishMavenStyle := true
   )
 
   object Dependency {
@@ -48,10 +50,8 @@ object MyBuild extends Build {
     val default = logging ++ test ++ unfiltered
   }
 
-  lazy val parent = Project(id("parent"), file(".")) aggregate(library, sampleWebApp)
-
   lazy val library = {
-    Project(id("library"), file("library"),
+    Project("unfiltered-scalate-servlet", file("library"),
       settings = defaultSettings ++ Seq(
         libraryDependencies := Dependency.default,
         initialCommands := """
@@ -67,7 +67,7 @@ object MyBuild extends Build {
 
   lazy val sampleWebApp = {
     import Dependency._
-    Project(id("web"), file("web"),
+    Project("unfiltered-scalate-servlet-sample-web", file("web"),
       settings = defaultSettings ++ Seq(
         libraryDependencies := default ++ loggingImpl ++ jetty
       ) ++ com.github.siasia.WebPlugin.webSettings

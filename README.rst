@@ -11,6 +11,19 @@ Unlike the official unfiltered-scalate, this library uses ServletRenderContext, 
 
 How to use
 -----------------------
+
+sbt
+~~~~~~~~~~~~~~~~~~~~~
+::
+
+    resolvers ++= Seq(
+      "akr4 release" at "http://akr4.github.com/mvn-repo/releases"
+    )
+
+    "net.physalis" %% "unfiltered-scalate-servlet" % "1.0"
+
+Plan
+~~~~~~~~~~~~~~~~~~~~~
 With default setting::
 
   import net.physalis.unfiltered.scalate.servlet.{ Scalate, DefaultScalateSupport }
@@ -24,7 +37,7 @@ Customize TemplateEngine::
 
   trait ScalateSupport extends DefaultScalateSupport {
     override def configureScalateTemplateEngine(engine: ServletTemplateEngine) {
-      engine.layoutStrategy = org.fusesource.scalate.layout.NullLayoutStrategy
+      engine.layoutStrategy = new DefaultLayoutStrategy(engine, "/scalate/layouts/default.jade")
       engine.mode = "dev" // or production
     }
   }
@@ -41,8 +54,13 @@ Sample Application
 ::
 
   $ sbt
-  sbt> project unfiltered-scalate-servlet-web
+  sbt> project unfiltered-scalate-servlet-sample-web
   sbt> container:start
   
   $ curl -v "http://localhost:8080?name=akira"
 
+License
+---------
+Copyright 2012 Akira Ueda
+
+Licensed under the Apache License, Version 2.0: http://www.apache.org/licenses/LICENSE-2.0
