@@ -68,7 +68,7 @@ object MyBuild extends Build {
             |import unfiltered.response._
           """.stripMargin
         )
-      ) dependsOn(unfilteredScalate)
+    ) dependsOn(unfilteredScalate)
 
   lazy val sampleWebApp = {
     import Dependency._
