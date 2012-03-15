@@ -20,8 +20,7 @@ object MyBuild extends Build {
     publishMavenStyle := true
   )
 
-  // unfiltered-scalate is not compatible with latest unfiltered.
-  val unfilteredVersion = "0.5.3"
+  val unfilteredVersion = "0.6.1"
 
   object Dependency {
 
@@ -54,7 +53,7 @@ object MyBuild extends Build {
   }
 
   lazy val unfilteredScalate =
-    uri("git://github.com/unfiltered/unfiltered-scalate#0.5.3")
+    uri("git://github.com/unfiltered/unfiltered-scalate")
 
   lazy val library =
     Project("unfiltered-scalate-servlet", file("library"),
