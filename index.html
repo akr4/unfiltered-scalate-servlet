@@ -1,0 +1,127 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>Unfiltered-scalate-servlet by akr4</title>
+    <link rel="stylesheet" href="stylesheets/styles.css">
+    <link rel="stylesheet" href="stylesheets/pygment_trac.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+    <script src="javascripts/respond.js"></script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <!--[if lt IE 8]>
+    <link rel="stylesheet" href="stylesheets/ie.css">
+    <![endif]-->
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+
+  </head>
+  <body>
+
+      <div id="header">
+        <nav>
+          <li class="fork"><a href="https://github.com/akr4/unfiltered-scalate-servlet">Fork On GitHub</a></li>
+          <li class="downloads"><a href="https://github.com/akr4/unfiltered-scalate-servlet/zipball/master">ZIP</a></li>
+          <li class="downloads"><a href="https://github.com/akr4/unfiltered-scalate-servlet/tarball/master">TAR</a></li>
+          <li class="title">DOWNLOADS</li>
+        </nav>
+      </div><!-- end header -->
+
+    <div class="wrapper">
+
+      <section>
+        <div id="title">
+          <h1>Unfiltered-scalate-servlet</h1>
+          <p></p>
+          <hr>
+          <span class="credits left">Project maintained by <a href="https://github.com/akr4">akr4</a></span>
+          <span class="credits right">Hosted on GitHub Pages &mdash; Theme by <a href="https://twitter.com/#!/michigangraham">mattgraham</a></span>
+        </div>
+
+        <h1>unfiltered-scalate-servlet</h1>
+
+<p>unfiltered-scalate-servlet is a library to utilize Scalate with Unfiltered in servlet environment.</p>
+
+<p>Unlike the official unfiltered-scalate, this library uses ServletRenderContext, so you can use servlet specific features in your view support functions as follows::</p>
+
+<div class="highlight">
+<pre>  <span class="k">object</span> <span class="nc">MyFunction</span> <span class="o">{</span>
+    <span class="k">import</span> <span class="nn">org.fusesource.scalate.servlet.ServletRenderContext._</span>
+    <span class="k">def</span> <span class="n">greeting</span> <span class="k">=</span> <span class="s">"Hello "</span> <span class="o">+</span> <span class="n">request</span><span class="o">.</span><span class="n">getParameter</span><span class="o">(</span><span class="s">"name"</span><span class="o">)</span>
+  <span class="o">}</span>
+</pre>
+</div>
+
+
+<h2>How to use</h2>
+
+<h3>sbt</h3>
+
+<div class="highlight">
+<pre>   <span class="n">resolvers</span> <span class="o">++=</span> <span class="nc">Seq</span><span class="o">(</span>
+      <span class="s">"akr4 release"</span> <span class="n">at</span> <span class="s">"<a href="http://akr4.github.com/mvn-repo/releases">http://akr4.github.com/mvn-repo/releases</a>"</span>
+    <span class="o">)</span>
+
+    <span class="s">"net.physalis"</span> <span class="o">%%</span> <span class="s">"unfiltered-scalate-servlet"</span> <span class="o">%</span> <span class="s">"2.0"</span>
+</pre>
+</div>
+
+
+<h3>Plan</h3>
+
+<p>With default setting::</p>
+
+<div class="highlight">
+<pre>  <span class="k">import</span> <span class="nn">net.physalis.unfiltered.scalate.servlet.DefaultScalateSupport</span>
+  <span class="k">class</span> <span class="nc">Hello</span> <span class="k">extends</span> <span class="nc">Plan</span> <span class="k">with</span> <span class="nc">DefaultScalateSupport</span> <span class="o">{</span>
+    <span class="k">def</span> <span class="n">intent</span> <span class="k">=</span> <span class="o">{</span>
+      <span class="k">case</span> <span class="n">req</span> <span class="k">=&gt;</span> <span class="nc">Scalate</span><span class="o">(</span><span class="n">req</span><span class="o">,</span> <span class="s">"WEB-INF/scalate/templates/hello.jade"</span><span class="o">)</span>
+    <span class="o">}</span>
+  <span class="o">}</span>
+</pre>
+</div>
+
+
+<p>Customize TemplateEngine::</p>
+
+<div class="highlight">
+<pre>  <span class="k">trait</span> <span class="nc">ScalateSupport</span> <span class="k">extends</span> <span class="nc">DefaultScalateSupport</span> <span class="o">{</span>
+    <span class="k">override</span> <span class="k">def</span> <span class="n">configureScalateTemplateEngine</span><span class="o">(</span><span class="n">engine</span><span class="k">:</span> <span class="kt">ServletTemplateEngine</span><span class="o">)</span> <span class="o">{</span>
+      <span class="n">engine</span><span class="o">.</span><span class="n">layoutStrategy</span> <span class="k">=</span> <span class="k">new</span> <span class="nc">DefaultLayoutStrategy</span><span class="o">(</span><span class="n">engine</span><span class="o">,</span> <span class="s">"/scalate/layouts/default.jade"</span><span class="o">)</span>
+      <span class="n">engine</span><span class="o">.</span><span class="n">mode</span> <span class="k">=</span> <span class="s">"dev"</span> <span class="c1">// or production</span>
+    <span class="o">}</span>
+  <span class="o">}</span>
+
+  <span class="k">class</span> <span class="nc">Hello</span> <span class="k">extends</span> <span class="nc">Plan</span> <span class="k">with</span> <span class="nc">ScalateSupport</span> <span class="o">{</span>
+    <span class="k">def</span> <span class="n">intent</span> <span class="k">=</span> <span class="o">{</span>
+      <span class="k">case</span> <span class="n">req</span> <span class="k">=&gt;</span> <span class="nc">Scalate</span><span class="o">(</span><span class="n">req</span><span class="o">,</span> <span class="s">"WEB-INF/scalate/templates/hello.jade"</span><span class="o">)</span>
+    <span class="o">}</span>
+  <span class="o">}</span>
+</pre>
+</div>
+
+
+<h2>Sample Application</h2>
+
+<div class="highlight">
+<pre>  <span class="n">$</span> <span class="n">sbt</span>
+  <span class="n">sbt</span><span class="o">&gt;</span> <span class="n">project</span> <span class="n">unfiltered</span><span class="o">-</span><span class="n">scalate</span><span class="o">-</span><span class="n">servlet</span><span class="o">-</span><span class="n">sample</span><span class="o">-</span><span class="n">web</span>
+  <span class="n">sbt</span><span class="o">&gt;</span> <span class="n">container</span><span class="k">:</span><span class="kt">start</span>
+
+  <span class="n">$</span> <span class="n">curl</span> <span class="o">-</span><span class="n">v</span> <span class="s">"http://localhost:8080?name=akira"</span>
+</pre>
+</div>
+
+
+<h2>License</h2>
+
+<p>Copyright 2012 Akira Ueda</p>
+
+<p>Licensed under the Apache License, Version 2.0: <a href="http://www.apache.org/licenses/LICENSE-2.0">http://www.apache.org/licenses/LICENSE-2.0</a></p>
+      </section>
+
+    </div>
+    <!--[if !IE]><script>fixScale(document);</script><!--<![endif]-->
+  </body>
+</html>
